@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9d27de95-bb6f-445f-bc6f-e163b0d6027e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/SNAS/train_search.py" beforeDir="false" afterPath="$PROJECT_DIR$/SNAS/train_search.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1awPnrh3KM9gPK8siOkt5A7Inx2" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9d27de95-bb6f-445f-bc6f-e163b0d6027e" name="Default Changelist" comment="" />
+      <created>1587643852282</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1587643852282</updated>
+      <workItem from="1587643853629" duration="367000" />
+      <workItem from="1587703780745" duration="599000" />
+      <workItem from="1587819297492" duration="1223000" />
+      <workItem from="1587864254539" duration="638000" />
+      <workItem from="1589605860860" duration="5777000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="660" y="297" width="600" height="486" key="find.popup" timestamp="1587819497193">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="660" y="297" width="600" height="486" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1587819497193" />
+  </component>
+</project>

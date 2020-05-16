@@ -468,24 +468,25 @@ class neural_architecture_search():
             
             # logging gradient
             count += 1
-            if self.args.resource_efficient:
-                self.optimizer.zero_grad()
-                self.arch_optimizer.zero_grad()
-                resource_loss.backward(retain_graph=True)
-                if not self.args.random_sample:
-                    normal_resource_gradient += self.model.normal_log_alpha.grad
-                    reduce_resource_gradient += self.model.reduce_log_alpha.grad
-            if self.args.snas:
-                self.optimizer.zero_grad()
-                self.arch_optimizer.zero_grad()
-                error_loss.backward(retain_graph=True)
-                if not self.args.random_sample:
-                    normal_loss_gradient += self.model.normal_log_alpha.grad
-                    reduce_loss_gradient += self.model.reduce_log_alpha.grad
-                self.optimizer.zero_grad()
-                self.arch_optimizer.zero_grad()
+            # if self.args.resource_efficient:
+            #     self.optimizer.zero_grad()
+            #     self.arch_optimizer.zero_grad()
+            #     resource_loss.backward(retain_graph=True)
+            #     if not self.args.random_sample:
+            #         normal_resource_gradient += self.model.normal_log_alpha.grad
+            #         reduce_resource_gradient += self.model.reduce_log_alpha.grad
+            # if self.args.snas:
+            #     self.optimizer.zero_grad()
+            #     self.arch_optimizer.zero_grad()
+            #     error_loss.backward(retain_graph=True)
+            #     if not self.args.random_sample:
+            #         normal_loss_gradient += self.model.normal_log_alpha.grad
+            #         reduce_loss_gradient += self.model.reduce_log_alpha.grad
+            #     self.optimizer.zero_grad()
+            #     self.arch_optimizer.zero_grad()
 
             if self.args.snas or not self.args.random_sample and not self.args.dsnas:
+                print("backward")
                 loss.backward()
             if not self.args.random_sample:
                 normal_total_gradient += self.model.normal_log_alpha.grad
