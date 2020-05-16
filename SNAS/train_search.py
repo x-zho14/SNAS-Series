@@ -20,7 +20,7 @@ parser.add_argument('--snas', action='store_true', default=False, help='true if 
 parser.add_argument('--dsnas', action='store_true', default=False, help='true if using dsnas')
 parser.add_argument('--seed', type=int, default=2, help='random seed')
 parser.add_argument("--local_rank", type=int)
-parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
+parser.add_argument('--report_freq', type=float, default=10, help='report frequency')
 
 # Training settings
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
