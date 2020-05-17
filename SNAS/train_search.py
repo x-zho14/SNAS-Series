@@ -10,7 +10,7 @@ import logging
 import argparse
 import torch.nn as nn
 import torch.utils
-import torchvision.datasets as dset
+from torchvision import datasets, transforms
 import torch.backends.cudnn as cudnn
     
 parser = argparse.ArgumentParser("cifar")
@@ -274,9 +274,26 @@ class neural_architecture_search():
 
     def init_loaddata(self):
 
-        train_transform, valid_transform = utils._data_transforms_cifar10(self.args)
-        train_data = dset.CIFAR10(root=self.args.data, train=True, download=True, transform=train_transform)
-        valid_data = dset.CIFAR10(root=self.args.data, train=False, download=True, transform=valid_transform)
+        # train_transform, valid_transform = utils._data_transforms_cifar10(self.args)
+        # train_data = dset.CIFAR10(root=self.args.data, train=True, download=True, transform=train_transform)
+        # valid_data = dset.CIFAR10(root=self.args.data, train=False, download=True, transform=valid_transform)
+
+        data_root = os.path.join(self.args.data, "mnist")
+        train_data = datasets.MNIST(
+            data_root,
+            train=True,
+            download=True,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        )
+        valid_data = datasets.MNIST(
+            data_root,
+            train=False,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
 
 
         if self.args.seed:
@@ -300,10 +317,10 @@ class neural_architecture_search():
             self.train_queue = torch.utils.data.DataLoader(
                 train_data, batch_size=self.args.batch_size,
                 shuffle=True,
-                pin_memory=False, num_workers=2)
+                pin_memory=True, num_workers=2)
 
             self.valid_queue = torch.utils.data.DataLoader(
-                valid_data, batch_size=self.args.batch_size, shuffle=False, pin_memory=False, num_workers=2)
+                valid_data, batch_size=self.args.batch_size, shuffle=False, pin_memory=True, num_workers=2)
         
 
     def main(self):
