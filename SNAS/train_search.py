@@ -293,7 +293,7 @@ class neural_architecture_search():
             transform=transforms.Compose(
                 [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
             ),
-        ),
+        )
 
 
         if self.args.seed:
