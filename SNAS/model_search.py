@@ -215,6 +215,7 @@ class Network(nn.Module):
         self.cells = nn.ModuleList()
         reduction_prev = False
         self.reduce_list = [layers // 3, 2 * layers // 3]
+        print(self.reduce_list)
         self.num_reduce = len(self.reduce_list)
         self.num_normal = layers - self.num_reduce
         for i in range(layers):
