@@ -232,6 +232,7 @@ class neural_architecture_search():
     def init_model(self):
         
         self.model = Network(self.args.init_channels, CIFAR_CLASSES, self.args.layers, self.criterion, self.args, self.rank, self.world_size)
+        print(self.model)
         self.model.to(self.device)
         if self.args.distributed:
             broadcast_params(self.model)
