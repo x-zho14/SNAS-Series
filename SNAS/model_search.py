@@ -218,7 +218,7 @@ class Network(nn.Module):
         self.num_reduce = len(self.reduce_list)
         self.num_normal = layers - self.num_reduce
         for i in range(layers):
-            print("C_prev_prev:", C_prev_prev, "C_prev:", C_prev, "C_curr:", C_curr)
+            print("i:", i, "C_prev_prev:", C_prev_prev, "C_prev:", C_prev, "C_curr:", C_curr)
             if i in self.reduce_list:
                 C_curr *= 2
                 reduction = True
