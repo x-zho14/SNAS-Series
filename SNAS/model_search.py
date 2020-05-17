@@ -672,7 +672,7 @@ class Network(nn.Module):
         # log_alpha 2d one_hot 2d
         u = torch.zeros_like(log_alpha).uniform_()
         if self.args.straight_through:
-            one_hot = CalculateSoftmaxMask((log_alpha + (-((-(u.log())).log()))) / self._temp)
+            one_hot = CalculateSoftmaxMask.apply((log_alpha + (-((-(u.log())).log()))) / self._temp)
         else:
             softmax = torch.nn.Softmax(-1)
             one_hot = softmax((log_alpha + (-((-(u.log())).log()))) / self._temp)
