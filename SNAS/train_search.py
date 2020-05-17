@@ -111,6 +111,8 @@ parser.add_argument('--ckpt_false_list', type=str, default='[]', help='include l
 parser.add_argument('--use_ckpt', action='store_true', default=False, help='true if layers out of ckpt_false_list use ckpt')
 
 parser.add_argument('--remark', type=str, default='none', help='further experiment details')
+
+parser.add_argument('--straight_through', action='store_true', default=False, help='use straight through softmax')
 args = parser.parse_args()
 
 args.save = 'search-{}-{}-{}'.format(args.save, time.strftime("%Y%m%d-%H%M%S"), args.remark)

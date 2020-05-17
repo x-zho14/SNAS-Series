@@ -14,7 +14,7 @@ import sys
 import os
 from utils import drop_path
 from ast import literal_eval
-
+import torch.autograd as autograd
 import torch.distributed as dist
 
 from model_edge_all import NetworkChild, AuxiliaryHeadCIFAR
@@ -666,11 +666,16 @@ class Network(nn.Module):
         arch_entropy = -(discrete_prob * torch.log(discrete_prob)).sum()
         return arch_entropy
 
+
+    
     def _get_categ_mask(self, log_alpha):
         # log_alpha 2d one_hot 2d
         u = torch.zeros_like(log_alpha).uniform_()
-        softmax = torch.nn.Softmax(-1)
-        one_hot = softmax((log_alpha + (-((-(u.log())).log()))) / self._temp)
+        if self.args.straight_through:
+            one_hot = CalculateSoftmaxMask((log_alpha + (-((-(u.log())).log()))) / self._temp)
+        else:
+            softmax = torch.nn.Softmax(-1)
+            one_hot = softmax((log_alpha + (-((-(u.log())).log()))) / self._temp)
         return one_hot
 
     def _get_onehot_mask(self, log_alpha):
@@ -793,3 +798,13 @@ class Network(nn.Module):
 
 
 
+class CalculateSoftmaxMask(autograd.Function):
+    @staticmethod
+    def forward(ctx, tempS):
+        softmax = torch.nn.Softmax(-1)
+        return softmax(tempS)
+
+    @staticmethod
+    def backward(ctx, g):
+        # send the gradient g straight-through on the backward pass.
+        return g
