@@ -206,6 +206,7 @@ class Network(nn.Module):
         stem_multiplier = self._stem_multiplier
         num_classes = self._num_classes
         C_curr = stem_multiplier * C
+        print("C_curr:", C_curr)
         self.stem = nn.Sequential(
             nn.Conv2d(3, C_curr, 3, padding=1, bias=False),
             nn.BatchNorm2d(C_curr)
@@ -217,6 +218,7 @@ class Network(nn.Module):
         self.num_reduce = len(self.reduce_list)
         self.num_normal = layers - self.num_reduce
         for i in range(layers):
+            print("C_curr:", C_curr)
             if i in self.reduce_list:
                 C_curr *= 2
                 reduction = True
@@ -230,6 +232,7 @@ class Network(nn.Module):
                     cell = Cell(steps, multiplier, C_prev_prev, C_prev, C_curr, reduction, reduction_prev,
                                 self.Primitives, self._bn_affine,  use_ckpt=True)
             else:
+                print(steps)
                 cell = Cell(steps, multiplier, C_prev_prev, C_prev, C_curr, reduction, reduction_prev,
                             self.Primitives, self._bn_affine, use_ckpt=False)
             reduction_prev = reduction
