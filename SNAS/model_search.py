@@ -413,239 +413,239 @@ class Network(nn.Module):
                     if self._auxiliary and self.training:
                         logits_aux = self.auxiliary_head(s1)
 
-                op_size = result[1]
-                op_flops = result[2]
-                op_mac = result[3]
-                #if self._resource_efficient:
-                discrete_prob_1 = F.softmax(log_alpha, dim=-1)
+                # op_size = result[1]
+                # op_flops = result[2]
+                # op_mac = result[3]
+                # #if self._resource_efficient:
+                # discrete_prob_1 = F.softmax(log_alpha, dim=-1)
+                #
+                # resource_size_baseline = op_size * discrete_prob_1 # dimension: edge_num * op_num
+                # resource_flops_baseline = op_flops * discrete_prob_1
+                # resource_mac_baseline = op_mac * discrete_prob_1
+                #
+                # clean_size_baseline = (resource_size_baseline.sum(-1)).clone() # dimension: edge_num * 1
+                # clean_size_baseline[torch.abs(resource_size_baseline.sum(-1)) < 1] = 1
+                # clean_flops_baseline = (resource_flops_baseline.sum(-1)).clone()
+                # clean_flops_baseline[torch.abs(resource_flops_baseline.sum(-1)) < 1] = 1
+                # clean_mac_baseline = (resource_mac_baseline.sum(-1)).clone()
+                # clean_mac_baseline[torch.abs(resource_mac_baseline.sum(-1)) < 1] = 1
+                #
+                # log_resource_size_baseline = torch.log(clean_size_baseline)
+                # log_resource_flops_baseline = torch.log(clean_flops_baseline)
+                # log_resource_mac_baseline = torch.log(clean_mac_baseline)
+                #
+                # resource_size_average = torch.tensor(np.average((op_size.sum(0) / op_size.shape[0]).tolist()).item(), device=op_size.device)
+                # resource_flops_average = torch.tensor(np.average((op_flops.sum(0) / op_flops.shape[0]).tolist()).item(), device=op_flops.device)
+                # resource_mac_average = torch.tensor(np.average((op_mac.sum(0) / op_mac.shape[0]).tolist()).item(), device=op_mac.device)
+                #
+                # clean_size_average = (resource_size_average.sum(-1)).clone()  # dimension: edge_num * 1
+                # clean_size_average[torch.abs(resource_size_average.sum(-1)) < 1] = 1
+                # clean_flops_average = (resource_flops_average.sum(-1)).clone()
+                # clean_flops_average[torch.abs(resource_flops_average.sum(-1)) < 1] = 1
+                # clean_mac_average = (resource_mac_average.sum(-1)).clone()
+                # clean_mac_average[torch.abs(resource_mac_average.sum(-1)) < 1] = 1
+                #
+                # log_resource_size_average = torch.log(clean_size_average)
+                # log_resource_flops_average = torch.log(clean_flops_average)
+                # log_resource_mac_average = torch.log(clean_mac_average)
+                #
+                # resource_size = op_size * weights # dimension: edge_num * op_num
+                # resource_flops = op_flops * weights
+                # resource_mac = op_mac * weights
+                #
+                # clean_size = (resource_size.sum(-1)).clone() # dimension: edge_num * 1
+                # clean_flops = (resource_flops.sum(-1)).clone()
+                # clean_mac = (resource_mac.sum(-1)).clone()
+                # clean_size[torch.abs(resource_size.sum(-1)) < 1] = 1
+                # clean_flops[torch.abs(resource_flops.sum(-1)) < 1] = 1
+                # clean_mac[torch.abs(resource_mac.sum(-1)) < 1] = 1
+                #
+                # log_resource_size = torch.log(torch.abs(clean_size)) # dimension: edge_num * 1
+                # log_resource_flops = torch.log(torch.abs(clean_flops))
+                # log_resource_mac = torch.log(torch.abs(clean_mac))
+                #
+                # resource_size_minus_average = resource_size.sum(-1) - resource_size_average
+                # resource_flops_minus_average = resource_flops.sum(-1) - resource_flops_average
+                # resource_mac_minus_average = resource_mac.sum(-1) - resource_mac_average
+                #
+                # log_resource_size_minus_average = log_resource_size - log_resource_size_average
+                # log_resource_flops_minus_average = log_resource_flops - log_resource_flops_average
+                # log_resource_mac_minus_average = log_resource_mac - log_resource_mac_average
 
-                resource_size_baseline = op_size * discrete_prob_1 # dimension: edge_num * op_num
-                resource_flops_baseline = op_flops * discrete_prob_1
-                resource_mac_baseline = op_mac * discrete_prob_1
-
-                clean_size_baseline = (resource_size_baseline.sum(-1)).clone() # dimension: edge_num * 1
-                clean_size_baseline[torch.abs(resource_size_baseline.sum(-1)) < 1] = 1
-                clean_flops_baseline = (resource_flops_baseline.sum(-1)).clone()
-                clean_flops_baseline[torch.abs(resource_flops_baseline.sum(-1)) < 1] = 1
-                clean_mac_baseline = (resource_mac_baseline.sum(-1)).clone()
-                clean_mac_baseline[torch.abs(resource_mac_baseline.sum(-1)) < 1] = 1
-
-                log_resource_size_baseline = torch.log(clean_size_baseline)
-                log_resource_flops_baseline = torch.log(clean_flops_baseline)
-                log_resource_mac_baseline = torch.log(clean_mac_baseline)
-
-                resource_size_average = torch.tensor(np.average((op_size.sum(0) / op_size.shape[0]).tolist()).item(), device=op_size.device)
-                resource_flops_average = torch.tensor(np.average((op_flops.sum(0) / op_flops.shape[0]).tolist()).item(), device=op_flops.device)
-                resource_mac_average = torch.tensor(np.average((op_mac.sum(0) / op_mac.shape[0]).tolist()).item(), device=op_mac.device)
-
-                clean_size_average = (resource_size_average.sum(-1)).clone()  # dimension: edge_num * 1
-                clean_size_average[torch.abs(resource_size_average.sum(-1)) < 1] = 1
-                clean_flops_average = (resource_flops_average.sum(-1)).clone()
-                clean_flops_average[torch.abs(resource_flops_average.sum(-1)) < 1] = 1
-                clean_mac_average = (resource_mac_average.sum(-1)).clone()
-                clean_mac_average[torch.abs(resource_mac_average.sum(-1)) < 1] = 1
-
-                log_resource_size_average = torch.log(clean_size_average)
-                log_resource_flops_average = torch.log(clean_flops_average)
-                log_resource_mac_average = torch.log(clean_mac_average)
-
-                resource_size = op_size * weights # dimension: edge_num * op_num
-                resource_flops = op_flops * weights
-                resource_mac = op_mac * weights
-
-                clean_size = (resource_size.sum(-1)).clone() # dimension: edge_num * 1
-                clean_flops = (resource_flops.sum(-1)).clone()
-                clean_mac = (resource_mac.sum(-1)).clone()
-                clean_size[torch.abs(resource_size.sum(-1)) < 1] = 1
-                clean_flops[torch.abs(resource_flops.sum(-1)) < 1] = 1
-                clean_mac[torch.abs(resource_mac.sum(-1)) < 1] = 1
-
-                log_resource_size = torch.log(torch.abs(clean_size)) # dimension: edge_num * 1
-                log_resource_flops = torch.log(torch.abs(clean_flops))
-                log_resource_mac = torch.log(torch.abs(clean_mac))
-                
-                resource_size_minus_average = resource_size.sum(-1) - resource_size_average
-                resource_flops_minus_average = resource_flops.sum(-1) - resource_flops_average
-                resource_mac_minus_average = resource_mac.sum(-1) - resource_mac_average
-
-                log_resource_size_minus_average = log_resource_size - log_resource_size_average
-                log_resource_flops_minus_average = log_resource_flops - log_resource_flops_average
-                log_resource_mac_minus_average = log_resource_mac - log_resource_mac_average
-
-                if self._method == 'reparametrization':
-                    if self._separation == 'all':
-                        resource_penalty = ((resource_size * 2 + resource_flops / 4000 + resource_mac / 100) * 0.43).sum(-1)  # dimension: edge_num * 1
-                        log_resource_penalty = (log_resource_size + log_resource_flops + log_resource_mac) / 3
-                    elif self._separation == 'size':
-                        resource_penalty = resource_size.sum(-1)
-                        log_resource_penalty = log_resource_size
-                    elif self._separation == 'flops':
-                        resource_penalty = resource_flops.sum(-1)
-                        log_resource_penalty = log_resource_flops
-                    elif self._separation == 'mac':
-                        resource_penalty = resource_mac.sum(-1)
-                        log_resource_penalty = log_resource_mac
-                    else:
-                        resource_penalty = torch.zeros_like(resource_size.sum(-1))
-                        log_resource_penalty = resource_penalty
-
-                elif self._method == 'policy_gradient':
-                    if self._separation == 'all':
-                        if self._minus_baseline:
-                            resource_penalty = (resource_size_minus_average * 2 + resource_flops_minus_average / 4000 + resource_mac_minus_average / 100) * 0.43
-                            log_resource_penalty = (log_resource_size_minus_average + log_resource_flops_minus_average + log_resource_mac_minus_average) / 3
-                        else:
-                            resource_penalty = ((resource_size * 2 + resource_flops / 4000 + resource_mac / 100) * 0.43).sum(-1)
-                            log_resource_penalty = (log_resource_size + log_resource_flops + log_resource_mac) / 3
-                    elif self._separation == 'size':
-                        if self._minus_baseline:
-                            resource_penalty = resource_size_minus_average
-                            log_resource_penalty = log_resource_size_minus_average
-                        else:
-                            resource_penalty = resource_size.sum(-1)
-                            log_resource_penalty = log_resource_size
-                    elif self._separation == 'flops':
-                        if self._minus_baseline:
-                            resource_penalty = resource_flops_minus_average
-                            log_resource_penalty = log_resource_flops_minus_average
-                        else:
-                            resource_penalty = resource_flops.sum(-1)
-                            log_resource_penalty = log_resource_flops
-                    elif self._separation == 'mac':
-                        if self._minus_baseline:
-                            resource_penalty = resource_mac_minus_average
-                            log_resource_penalty = log_resource_mac_minus_average
-                        else:
-                            resource_penalty = resource_mac.sum(-1)
-                            log_resource_penalty = log_resource_mac
-                    else:
-                        resource_penalty = torch.zeros_like(resource_size.sum(-1))
-                        log_resource_penalty = resource_penalty
-
-                elif self._method == 'discrete':
-                    if self._separation == 'all':
-                        resource_penalty = ((resource_size_baseline * 2 + resource_flops_baseline / 4000 +
-                                             resource_mac_baseline / 100) * 0.43).sum(-1)
-                        log_resource_penalty = (log_resource_size_baseline + log_resource_flops_baseline +
-                                                log_resource_mac_baseline) / 3
-                    elif self._separation == 'size':
-                        resource_penalty = resource_size_baseline.sum(-1)
-                        log_resource_penalty = log_resource_size_baseline
-                    elif self._separation == 'flops':
-                        resource_penalty = resource_flops_baseline.sum(-1)
-                        log_resource_penalty = log_resource_flops_baseline
-                    elif self._separation == 'mac':
-                        resource_penalty = resource_mac_baseline.sum(-1)
-                        log_resource_penalty = log_resource_mac_baseline
-                    else:
-                        resource_penalty = torch.zeros_like(resource_size_baseline.sum(-1))
-                        log_resource_penalty = resource_penalty
-                else:
-                    resource_penalty = torch.zeros_like(resource_size_baseline.sum(-1))
-                    log_resource_penalty = resource_penalty
-
-                if self._method == 'policy_gradient':
-                    concrete_log_prob = self.logp(log_alpha, weights)
-
-                    # make resource non-differentiable
-                    resource_penalty = resource_penalty.data
-                    log_resource_penalty = log_resource_penalty.data
-
-                    if cell.reduction:
-                        total_penalty[7] += (concrete_log_prob * resource_penalty).sum()
-                        total_penalty[36] += (concrete_log_prob * log_resource_penalty).sum()
-                    else:
-                        total_penalty[2] += (concrete_log_prob * resource_penalty).sum()
-                        total_penalty[35] += (concrete_log_prob * log_resource_penalty).sum()
-                elif self._method == 'reparametrization':
-                    if cell.reduction:
-                        total_penalty[25] += resource_penalty.sum()
-                        total_penalty[38] += log_resource_penalty.sum()
-                    else:
-                        total_penalty[26] += resource_penalty.sum()
-                        total_penalty[37] += log_resource_penalty.sum()
-                elif self._method == 'discrete':
-                    if cell.reduction:
-                        total_penalty[27] += resource_penalty.sum()
-                        total_penalty[40] += log_resource_penalty.sum()
-                    else:
-                        total_penalty[28] += resource_penalty.sum()
-                        total_penalty[39] += log_resource_penalty.sum()
-                else:
-                    total_penalty[-1] += resource_penalty.sum()
-                    total_penalty[-2] += resource_penalty.sum()
-
-                concrete_log_prob = self.logp(log_alpha, weights)
-                if cell.reduction:
-                    # baseline
-                    total_penalty[8] += resource_size_baseline.sum()
-                    total_penalty[9] += resource_flops_baseline.sum()
-                    total_penalty[10] += resource_mac_baseline.sum()
-                    total_penalty[24] += resource_penalty.sum()
-                    total_penalty[59] += log_resource_penalty.sum()
-                    # MC(R)
-                    total_penalty[32] += resource_size.sum()
-                    total_penalty[33] += resource_flops.sum()
-                    total_penalty[34] += resource_mac.sum()
-                    # log(|R|)
-                    total_penalty[44] += log_resource_size.sum()
-                    total_penalty[45] += log_resource_flops.sum()
-                    total_penalty[46] += log_resource_mac.sum()
-                    # logP * R
-                    total_penalty[50] += (concrete_log_prob * resource_size.sum(-1)).sum()
-                    total_penalty[51] += (concrete_log_prob * resource_flops.sum(-1)).sum()
-                    total_penalty[52] += (concrete_log_prob * resource_mac.sum(-1)).sum()
-                    # logP * log(|R|)
-                    total_penalty[56] += (concrete_log_prob * log_resource_size).sum()
-                    total_penalty[57] += (concrete_log_prob * log_resource_flops).sum()
-                    total_penalty[58] += (concrete_log_prob * log_resource_mac).sum()
-                    # R - avg
-                    total_penalty[63] += resource_size_minus_average.sum()
-                    total_penalty[64] += resource_flops_minus_average.sum()
-                    total_penalty[65] += resource_mac_minus_average.sum()
-                    # logR - log(avg)
-                    total_penalty[69] += log_resource_size_minus_average.sum()
-                    total_penalty[70] += log_resource_flops_minus_average.sum()
-                    total_penalty[71] += log_resource_mac_minus_average.sum()
-                    # operation
-                    op_reduce[0] += op_size
-                    op_reduce[1] += op_flops
-                    op_reduce[2] += op_mac
-
-                else:
-                    # baseline
-                    total_penalty[3] += resource_size_baseline.sum()
-                    total_penalty[5] += resource_flops_baseline.sum()
-                    total_penalty[6] += resource_mac_baseline.sum()
-                    total_penalty[23] += resource_penalty.sum()
-                    # MC(R)
-                    total_penalty[29] += resource_size.sum()
-                    total_penalty[30] += resource_flops.sum()
-                    total_penalty[31] += resource_mac.sum()
-                    # log(abs(R))
-                    total_penalty[41] += log_resource_size.sum()
-                    total_penalty[42] += log_resource_flops.sum()
-                    total_penalty[43] += log_resource_mac.sum()
-                    # logP * R
-                    total_penalty[47] += (concrete_log_prob * resource_size.sum(-1)).sum()
-                    total_penalty[48] += (concrete_log_prob * resource_flops.sum(-1)).sum()
-                    total_penalty[49] += (concrete_log_prob * resource_mac.sum(-1)).sum()
-                    # logP * log(|R|)
-                    total_penalty[53] += (concrete_log_prob * log_resource_size).sum()
-                    total_penalty[54] += (concrete_log_prob * log_resource_flops).sum()
-                    total_penalty[55] += (concrete_log_prob * log_resource_mac).sum()
-                    # R - avg
-                    total_penalty[60] += resource_size_minus_average.sum()
-                    total_penalty[61] += resource_flops_minus_average.sum()
-                    total_penalty[62] += resource_mac_minus_average.sum()
-                    # logR - log(avg)
-                    total_penalty[66] += log_resource_size_minus_average.sum()
-                    total_penalty[67] += log_resource_flops_minus_average.sum()
-                    total_penalty[68] += log_resource_mac_minus_average.sum()
-                    # operation
-                    op_normal[0] += op_size
-                    op_normal[1] += op_flops
-                    op_normal[2] += op_mac
+                # if self._method == 'reparametrization':
+                #     if self._separation == 'all':
+                #         resource_penalty = ((resource_size * 2 + resource_flops / 4000 + resource_mac / 100) * 0.43).sum(-1)  # dimension: edge_num * 1
+                #         log_resource_penalty = (log_resource_size + log_resource_flops + log_resource_mac) / 3
+                #     elif self._separation == 'size':
+                #         resource_penalty = resource_size.sum(-1)
+                #         log_resource_penalty = log_resource_size
+                #     elif self._separation == 'flops':
+                #         resource_penalty = resource_flops.sum(-1)
+                #         log_resource_penalty = log_resource_flops
+                #     elif self._separation == 'mac':
+                #         resource_penalty = resource_mac.sum(-1)
+                #         log_resource_penalty = log_resource_mac
+                #     else:
+                #         resource_penalty = torch.zeros_like(resource_size.sum(-1))
+                #         log_resource_penalty = resource_penalty
+                #
+                # elif self._method == 'policy_gradient':
+                #     if self._separation == 'all':
+                #         if self._minus_baseline:
+                #             resource_penalty = (resource_size_minus_average * 2 + resource_flops_minus_average / 4000 + resource_mac_minus_average / 100) * 0.43
+                #             log_resource_penalty = (log_resource_size_minus_average + log_resource_flops_minus_average + log_resource_mac_minus_average) / 3
+                #         else:
+                #             resource_penalty = ((resource_size * 2 + resource_flops / 4000 + resource_mac / 100) * 0.43).sum(-1)
+                #             log_resource_penalty = (log_resource_size + log_resource_flops + log_resource_mac) / 3
+                #     elif self._separation == 'size':
+                #         if self._minus_baseline:
+                #             resource_penalty = resource_size_minus_average
+                #             log_resource_penalty = log_resource_size_minus_average
+                #         else:
+                #             resource_penalty = resource_size.sum(-1)
+                #             log_resource_penalty = log_resource_size
+                #     elif self._separation == 'flops':
+                #         if self._minus_baseline:
+                #             resource_penalty = resource_flops_minus_average
+                #             log_resource_penalty = log_resource_flops_minus_average
+                #         else:
+                #             resource_penalty = resource_flops.sum(-1)
+                #             log_resource_penalty = log_resource_flops
+                #     elif self._separation == 'mac':
+                #         if self._minus_baseline:
+                #             resource_penalty = resource_mac_minus_average
+                #             log_resource_penalty = log_resource_mac_minus_average
+                #         else:
+                #             resource_penalty = resource_mac.sum(-1)
+                #             log_resource_penalty = log_resource_mac
+                #     else:
+                #         resource_penalty = torch.zeros_like(resource_size.sum(-1))
+                #         log_resource_penalty = resource_penalty
+                #
+                # elif self._method == 'discrete':
+                #     if self._separation == 'all':
+                #         resource_penalty = ((resource_size_baseline * 2 + resource_flops_baseline / 4000 +
+                #                              resource_mac_baseline / 100) * 0.43).sum(-1)
+                #         log_resource_penalty = (log_resource_size_baseline + log_resource_flops_baseline +
+                #                                 log_resource_mac_baseline) / 3
+                #     elif self._separation == 'size':
+                #         resource_penalty = resource_size_baseline.sum(-1)
+                #         log_resource_penalty = log_resource_size_baseline
+                #     elif self._separation == 'flops':
+                #         resource_penalty = resource_flops_baseline.sum(-1)
+                #         log_resource_penalty = log_resource_flops_baseline
+                #     elif self._separation == 'mac':
+                #         resource_penalty = resource_mac_baseline.sum(-1)
+                #         log_resource_penalty = log_resource_mac_baseline
+                #     else:
+                #         resource_penalty = torch.zeros_like(resource_size_baseline.sum(-1))
+                #         log_resource_penalty = resource_penalty
+                # else:
+                #     resource_penalty = torch.zeros_like(resource_size_baseline.sum(-1))
+                #     log_resource_penalty = resource_penalty
+                #
+                # if self._method == 'policy_gradient':
+                #     concrete_log_prob = self.logp(log_alpha, weights)
+                #
+                #     # make resource non-differentiable
+                #     resource_penalty = resource_penalty.data
+                #     log_resource_penalty = log_resource_penalty.data
+                #
+                #     if cell.reduction:
+                #         total_penalty[7] += (concrete_log_prob * resource_penalty).sum()
+                #         total_penalty[36] += (concrete_log_prob * log_resource_penalty).sum()
+                #     else:
+                #         total_penalty[2] += (concrete_log_prob * resource_penalty).sum()
+                #         total_penalty[35] += (concrete_log_prob * log_resource_penalty).sum()
+                # elif self._method == 'reparametrization':
+                #     if cell.reduction:
+                #         total_penalty[25] += resource_penalty.sum()
+                #         total_penalty[38] += log_resource_penalty.sum()
+                #     else:
+                #         total_penalty[26] += resource_penalty.sum()
+                #         total_penalty[37] += log_resource_penalty.sum()
+                # elif self._method == 'discrete':
+                #     if cell.reduction:
+                #         total_penalty[27] += resource_penalty.sum()
+                #         total_penalty[40] += log_resource_penalty.sum()
+                #     else:
+                #         total_penalty[28] += resource_penalty.sum()
+                #         total_penalty[39] += log_resource_penalty.sum()
+                # else:
+                #     total_penalty[-1] += resource_penalty.sum()
+                #     total_penalty[-2] += resource_penalty.sum()
+                #
+                # concrete_log_prob = self.logp(log_alpha, weights)
+                # if cell.reduction:
+                #     # baseline
+                #     total_penalty[8] += resource_size_baseline.sum()
+                #     total_penalty[9] += resource_flops_baseline.sum()
+                #     total_penalty[10] += resource_mac_baseline.sum()
+                #     total_penalty[24] += resource_penalty.sum()
+                #     total_penalty[59] += log_resource_penalty.sum()
+                #     # MC(R)
+                #     total_penalty[32] += resource_size.sum()
+                #     total_penalty[33] += resource_flops.sum()
+                #     total_penalty[34] += resource_mac.sum()
+                #     # log(|R|)
+                #     total_penalty[44] += log_resource_size.sum()
+                #     total_penalty[45] += log_resource_flops.sum()
+                #     total_penalty[46] += log_resource_mac.sum()
+                #     # logP * R
+                #     total_penalty[50] += (concrete_log_prob * resource_size.sum(-1)).sum()
+                #     total_penalty[51] += (concrete_log_prob * resource_flops.sum(-1)).sum()
+                #     total_penalty[52] += (concrete_log_prob * resource_mac.sum(-1)).sum()
+                #     # logP * log(|R|)
+                #     total_penalty[56] += (concrete_log_prob * log_resource_size).sum()
+                #     total_penalty[57] += (concrete_log_prob * log_resource_flops).sum()
+                #     total_penalty[58] += (concrete_log_prob * log_resource_mac).sum()
+                #     # R - avg
+                #     total_penalty[63] += resource_size_minus_average.sum()
+                #     total_penalty[64] += resource_flops_minus_average.sum()
+                #     total_penalty[65] += resource_mac_minus_average.sum()
+                #     # logR - log(avg)
+                #     total_penalty[69] += log_resource_size_minus_average.sum()
+                #     total_penalty[70] += log_resource_flops_minus_average.sum()
+                #     total_penalty[71] += log_resource_mac_minus_average.sum()
+                #     # operation
+                #     op_reduce[0] += op_size
+                #     op_reduce[1] += op_flops
+                #     op_reduce[2] += op_mac
+                #
+                # else:
+                #     # baseline
+                #     total_penalty[3] += resource_size_baseline.sum()
+                #     total_penalty[5] += resource_flops_baseline.sum()
+                #     total_penalty[6] += resource_mac_baseline.sum()
+                #     total_penalty[23] += resource_penalty.sum()
+                #     # MC(R)
+                #     total_penalty[29] += resource_size.sum()
+                #     total_penalty[30] += resource_flops.sum()
+                #     total_penalty[31] += resource_mac.sum()
+                #     # log(abs(R))
+                #     total_penalty[41] += log_resource_size.sum()
+                #     total_penalty[42] += log_resource_flops.sum()
+                #     total_penalty[43] += log_resource_mac.sum()
+                #     # logP * R
+                #     total_penalty[47] += (concrete_log_prob * resource_size.sum(-1)).sum()
+                #     total_penalty[48] += (concrete_log_prob * resource_flops.sum(-1)).sum()
+                #     total_penalty[49] += (concrete_log_prob * resource_mac.sum(-1)).sum()
+                #     # logP * log(|R|)
+                #     total_penalty[53] += (concrete_log_prob * log_resource_size).sum()
+                #     total_penalty[54] += (concrete_log_prob * log_resource_flops).sum()
+                #     total_penalty[55] += (concrete_log_prob * log_resource_mac).sum()
+                #     # R - avg
+                #     total_penalty[60] += resource_size_minus_average.sum()
+                #     total_penalty[61] += resource_flops_minus_average.sum()
+                #     total_penalty[62] += resource_mac_minus_average.sum()
+                #     # logR - log(avg)
+                #     total_penalty[66] += log_resource_size_minus_average.sum()
+                #     total_penalty[67] += log_resource_flops_minus_average.sum()
+                #     total_penalty[68] += log_resource_mac_minus_average.sum()
+                #     # operation
+                #     op_normal[0] += op_size
+                #     op_normal[1] += op_flops
+                #     op_normal[2] += op_mac
         if self.args.snas:
             out = self.global_pooling(s1)
             logits = self.classifier(out.view(out.size(0), -1))
