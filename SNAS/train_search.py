@@ -329,10 +329,10 @@ class neural_architecture_search():
             if self.rank == 0:
                 logging.info('epoch %d lr %e temp %e', epoch, self.lr, self.model._temp)
                 self.logger.add_scalar('epoch_temp', self.model._temp, epoch)
-                logging.info(self.model.normal_log_alpha)
-                logging.info(self.model.reduce_log_alpha)
-                logging.info(self.model._get_weights(self.model.normal_log_alpha[0]))
-                logging.info(self.model._get_weights(self.model.reduce_log_alpha[0]))
+                # logging.info(self.model.normal_log_alpha)
+                # logging.info(self.model.reduce_log_alpha)
+                # logging.info(self.model._get_weights(self.model.normal_log_alpha[0]))
+                # logging.info(self.model._get_weights(self.model.reduce_log_alpha[0]))
 
             genotype_edge_all = self.model.genotype_edge_all()
 
