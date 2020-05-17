@@ -446,10 +446,11 @@ class neural_architecture_search():
                 resource_loss = self.model._resource_lambda * log_resource_penalty
             else:
                 resource_loss = self.model._resource_lambda * resource_penalty
-                
 
+            print(resource_loss, error_loss)
             if self.args.loss:
                 if self.args.snas:
+
                     loss = resource_loss.clone() + error_loss.clone()
                 elif self.args.dsnas:
                     loss = resource_loss.clone()
