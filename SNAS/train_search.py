@@ -332,7 +332,8 @@ class neural_architecture_search():
             self.optimizer, float(self.args.epochs), eta_min=self.args.learning_rate_min)
 
         self.temp_scheduler = utils.Temp_Scheduler(self.args.epochs, self.model._temp, self.args.temp, temp_min=self.args.temp_min)
-
+        best_acc = 0
+        best_epoch = 0
         for epoch in range(self.args.epochs):
             if self.args.random_sample_pretrain:
                 if epoch < self.args.random_sample_pretrain_epoch:
@@ -362,25 +363,31 @@ class neural_architecture_search():
                 utils.txt('genotype', self.args.save, txt_name, str(genotype_edge_all), generate_date)
 
             self.model.train() 
-            train_acc, loss, error_loss, loss_alpha = self.train(epoch, logging)
+            train_acc_avg, loss_avg, error_loss_avg, loss_alpha = self.train(epoch, logging)
             if self.rank == 0:
-                logging.info('train_acc %f', train_acc)
-                self.logger.add_scalar("epoch_train_acc", train_acc, epoch)
-                self.logger.add_scalar("epoch_train_error_loss", error_loss, epoch)
+                logging.info('train_acc %f', train_acc_avg)
+                self.logger.add_scalar("epoch_train_acc", train_acc_avg, epoch)
+                self.logger.add_scalar("epoch_train_total_loss", loss_avg, epoch)
+                self.logger.add_scalar("epoch_train_error_loss", error_loss_avg, epoch)
                 if self.args.dsnas:
                     self.logger.add_scalar("epoch_train_alpha_loss", loss_alpha, epoch)
 
             # validation
             self.model.eval()
-            valid_acc, valid_obj = self.infer(epoch)
+            valid_acc, valid_loss = self.infer(epoch)
             if self.args.gen_max_child:
                 self.args.gen_max_child_flag = True
                 valid_acc_max_child, valid_obj_max_child = self.infer(epoch)                
                 self.args.gen_max_child_flag = False
-
+            if valid_acc > best_acc:
+                best_acc = valid_acc
+                best_epoch = epoch
             if self.rank == 0:
-                logging.info('valid_acc %f', valid_acc)
+                logging.info('valid_acc %f, valid_loss %f', valid_acc, valid_loss)
+                logging.info("best acc, epoch: %f, %d", best_acc, best_epoch)
                 self.logger.add_scalar("epoch_valid_acc", valid_acc, epoch)
+                self.logger.add_scalar("epoch_valid_loss", valid_loss, epoch)
+                self.logger.add_scalar("best_valid_acc", best_acc, epoch)
                 if self.args.gen_max_child:
                     logging.info('valid_acc_argmax_alpha %f', valid_acc_max_child)
                     self.logger.add_scalar("epoch_valid_acc_argmax_alpha", valid_acc_max_child, epoch)
@@ -392,11 +399,12 @@ class neural_architecture_search():
             logging.info(self.model.reduce_log_alpha)
             genotype_edge_all = self.model.genotype_edge_all()
             logging.info('genotype_edge_all = %s', genotype_edge_all)
-
+            logging.info("best acc, epoch: %f, %d", best_acc, best_epoch)
 
 
     def train(self, epoch, logging):
-        objs = utils.AvgrageMeter()
+        error_loss_meter = utils.AvgrageMeter()
+        total_loss_meter = utils.AvgrageMeter()
         top1 = utils.AvgrageMeter()
         top5 = utils.AvgrageMeter()
         grad = utils.AvgrageMeter()
@@ -646,7 +654,8 @@ class neural_architecture_search():
                 prec1.div_(self.world_size)
                 prec5.div_(self.world_size)
                 #dist_util.all_reduce([loss, prec1, prec5], 'mean')
-            objs.update(error_loss.item(), n)
+            error_loss_meter.update(error_loss.item(), n)
+            total_loss_meter.update(loss.item(), n)
             top1.update(prec1.item(), n)
             top5.update(prec5.item(), n)
 
@@ -666,10 +675,10 @@ class neural_architecture_search():
         #     logging.info(normal_total_gradient / count)
         #     logging.info(reduce_total_gradient / count)
 
-        return top1.avg, loss, error_loss, loss_alpha
+        return top1.avg, total_loss_meter.avg, error_loss_meter.avg, loss_alpha
 
     def infer(self, epoch):
-        objs = utils.AvgrageMeter()
+        loss_meter = utils.AvgrageMeter()
         top1 = utils.AvgrageMeter()
         top5 = utils.AvgrageMeter()
        
@@ -695,16 +704,16 @@ class neural_architecture_search():
                     dist.all_reduce(prec5)
                     prec1.div_(self.world_size)
                     prec5.div_(self.world_size)
-                objs.update(loss.item(), input.size(0))
+                loss_meter.update(loss.item(), input.size(0))
                 top1.update(prec1.item(), input.size(0))
                 top5.update(prec5.item(), input.size(0))
 
                 if step % self.args.report_freq == 0 and self.rank == 0:
-                    logging.info('valid %03d %e %f %f', step, objs.avg, top1.avg, top5.avg)
+                    logging.info('valid %03d %e %f %f', step, loss_meter.avg, top1.avg, top5.avg)
                     self.logger.add_scalar("iter_valid_loss", loss, step + len(self.valid_queue.dataset) * epoch)
                     self.logger.add_scalar("iter_valid_top1_acc", top1.avg, step + len(self.valid_queue.dataset) * epoch)
 
-        return top1.avg, objs.avg
+        return top1.avg, loss_meter.avg
 
 
 if __name__ == '__main__':
